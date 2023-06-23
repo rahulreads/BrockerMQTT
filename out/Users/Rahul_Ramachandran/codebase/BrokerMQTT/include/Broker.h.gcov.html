@@ -1,0 +1,285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - Users/Rahul_Ramachandran/codebase/BrokerMQTT/include/Broker.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">/Users/Rahul_Ramachandran/codebase/BrokerMQTT/include</a> - Broker.h<span style="font-size: 80%;"> (source / <a href="Broker.h.func-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">40.0&nbsp;%</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">4</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2023-06-23 11:40:04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryLo">33.3&nbsp;%</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">5</td>
+          </tr>
+                  <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : /**</span>
+<span id="L2"><span class="lineNum">       2</span>              :  * @file Broker.h</span>
+<span id="L3"><span class="lineNum">       3</span>              :  * @author Alexander Leano</span>
+<span id="L4"><span class="lineNum">       4</span>              :  * @brief Broker class</span>
+<span id="L5"><span class="lineNum">       5</span>              :  * @version 0.1</span>
+<span id="L6"><span class="lineNum">       6</span>              :  * @date 2022-12-05</span>
+<span id="L7"><span class="lineNum">       7</span>              : */</span>
+<span id="L8"><span class="lineNum">       8</span>              : </span>
+<span id="L9"><span class="lineNum">       9</span>              : #ifndef BROKER_H</span>
+<span id="L10"><span class="lineNum">      10</span>              : #define BROKER_H</span>
+<span id="L11"><span class="lineNum">      11</span>              : </span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &quot;Message.h&quot;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &quot;SafeQueue.h&quot;</span>
+<span id="L14"><span class="lineNum">      14</span>              : </span>
+<span id="L15"><span class="lineNum">      15</span>              : #include &lt;list&gt;</span>
+<span id="L16"><span class="lineNum">      16</span>              : #include &lt;set&gt;</span>
+<span id="L17"><span class="lineNum">      17</span>              : #include &lt;mutex&gt;              ///sdt:mutex,std::unique_lock</span>
+<span id="L18"><span class="lineNum">      18</span>              : #include &lt;pthread.h&gt;             // std::thread</span>
+<span id="L19"><span class="lineNum">      19</span>              : #include &lt;thread&gt;             // std::thread</span>
+<span id="L20"><span class="lineNum">      20</span>              : #include &lt;queue&gt;              /// std::queue</span>
+<span id="L21"><span class="lineNum">      21</span>              : #include &lt;condition_variable&gt; ///std::condition_variable</span>
+<span id="L22"><span class="lineNum">      22</span>              : #include &lt;iostream&gt;           /// std::cout</span>
+<span id="L23"><span class="lineNum">      23</span>              : </span>
+<span id="L24"><span class="lineNum">      24</span>              : /* Struct to represent the concepts of subscriptions made </span>
+<span id="L25"><span class="lineNum">      25</span>              :  * by the clients and the topics published with the </span>
+<span id="L26"><span class="lineNum">      26</span>              :  * requirement to be retained for immediate use.</span>
+<span id="L27"><span class="lineNum">      27</span>              : */</span>
+<span id="L28"><span class="lineNum">      28</span>              : struct Subscription;</span>
+<span id="L29"><span class="lineNum">      29</span>              : struct RetainedTopic;</span>
+<span id="L30"><span class="lineNum">      30</span>              : struct CompareTopic;</span>
+<span id="L31"><span class="lineNum">      31</span>              : struct CompareRT;</span>
+<span id="L32"><span class="lineNum">      32</span>              : class Broker;</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              : /// @brief Interface implemented in the Broker, so that, SimClient sends messages</span>
+<span id="L35"><span class="lineNum">      35</span>              : /// to the client representation in the broker side</span>
+<span id="L36"><span class="lineNum">      36</span>              : class BrokerOpsIF</span>
+<span id="L37"><span class="lineNum">      37</span>              : {</span>
+<span id="L38"><span class="lineNum">      38</span>              : public:</span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC tlaBgGNC">           1 :     BrokerOpsIF() { ; };</span></span>
+<span id="L40"><span class="lineNum">      40</span>              :     virtual void sendMsg(const Message &amp;) = 0;</span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              : protected:</span>
+<span id="L43"><span class="lineNum">      43</span>              : private:</span>
+<span id="L44"><span class="lineNum">      44</span>              : };</span>
+<span id="L45"><span class="lineNum">      45</span>              : </span>
+<span id="L46"><span class="lineNum">      46</span>              : /// @brief Interface implemented in the SimClient to receive messages from the client</span>
+<span id="L47"><span class="lineNum">      47</span>              : /// representation in the broker side.</span>
+<span id="L48"><span class="lineNum">      48</span>              : class ClientOpsIF</span>
+<span id="L49"><span class="lineNum">      49</span>              : {</span>
+<span id="L50"><span class="lineNum">      50</span>              : public:</span>
+<span id="L51"><span class="lineNum">      51</span>              :     ClientOpsIF() { ; };</span>
+<span id="L52"><span class="lineNum">      52</span>              :     virtual void recvMsg(const Message &amp;) = 0;</span>
+<span id="L53"><span class="lineNum">      53</span>              : </span>
+<span id="L54"><span class="lineNum">      54</span>              : protected:</span>
+<span id="L55"><span class="lineNum">      55</span>              : private:</span>
+<span id="L56"><span class="lineNum">      56</span>              : };</span>
+<span id="L57"><span class="lineNum">      57</span>              : </span>
+<span id="L58"><span class="lineNum">      58</span>              : </span>
+<span id="L59"><span class="lineNum">      59</span>              : /// @brief Client representation in the broker side to</span>
+<span id="L60"><span class="lineNum">      60</span>              : /// manage connection, messages, subscriptions and retained topics</span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaUNC tlaBgUNC">           0 : class Client : public BrokerOpsIF</span></span>
+<span id="L62"><span class="lineNum">      62</span>              : {</span>
+<span id="L63"><span class="lineNum">      63</span>              : public:</span>
+<span id="L64"><span class="lineNum">      64</span>              :     /// @brief</span>
+<span id="L65"><span class="lineNum">      65</span>              :     /// @param cifops</span>
+<span id="L66"><span class="lineNum">      66</span>              :     Client(ClientOpsIF *cifops);</span>
+<span id="L67"><span class="lineNum">      67</span>              : </span>
+<span id="L68"><span class="lineNum">      68</span>              :     /// @brief Send message to the client representation in the broker to be added to the queue of messages.</span>
+<span id="L69"><span class="lineNum">      69</span>              :     void sendMsg(const Message &amp;m);</span>
+<span id="L70"><span class="lineNum">      70</span>              : </span>
+<span id="L71"><span class="lineNum">      71</span>              :     /// @brief Send Msg to Sim Client</span>
+<span id="L72"><span class="lineNum">      72</span>              :     void sendBrokerCl2Client(const Message &amp;m);</span>
+<span id="L73"><span class="lineNum">      73</span>              :     static void destroyCl(Client *cl);</span>
+<span id="L74"><span class="lineNum">      74</span>              : private:</span>
+<span id="L75"><span class="lineNum">      75</span>              :     std::thread *m_thread;            // Thread to manage the client</span>
+<span id="L76"><span class="lineNum">      76</span>              :     ClientOpsIF *cif;                 // Client interface</span>
+<span id="L77"><span class="lineNum">      77</span>              :     std::mutex cifmtx;                // Client interface mutex to protect the access to the interface</span>
+<span id="L78"><span class="lineNum">      78</span>              :     std::list&lt;Subscription *&gt; subs;   // List of pointer of Client Subscriptions. Each client process its own subs.</span>
+<span id="L79"><span class="lineNum">      79</span>              :     std::set&lt;RetainedTopic *&gt; topics; // Retained topic</span>
+<span id="L80"><span class="lineNum">      80</span>              :     SafeQueue&lt;Message *&gt; m_queue;     // Message to process queue</span>
+<span id="L81"><span class="lineNum">      81</span>              : </span>
+<span id="L82"><span class="lineNum">      82</span>              :     /// Thread Created to process each client</span>
+<span id="L83"><span class="lineNum">      83</span>              :     bool CreateThread();</span>
+<span id="L84"><span class="lineNum">      84</span>              : </span>
+<span id="L85"><span class="lineNum">      85</span>              :     /// Point of entry to the thread to process connection and msgs</span>
+<span id="L86"><span class="lineNum">      86</span>              :     void Process();</span>
+<span id="L87"><span class="lineNum">      87</span>              :     // Process of msg type</span>
+<span id="L88"><span class="lineNum">      88</span>              :     bool processMsg(Message *msg);</span>
+<span id="L89"><span class="lineNum">      89</span>              :     // Process to conenect the client with the broker</span>
+<span id="L90"><span class="lineNum">      90</span>              :     void processConnect(ConnectMsg *m);</span>
+<span id="L91"><span class="lineNum">      91</span>              :     // Process of subscription with a topic in the broker</span>
+<span id="L92"><span class="lineNum">      92</span>              :     void processSubs(SubscribeMsg *msg);</span>
+<span id="L93"><span class="lineNum">      93</span>              :     // Process of publish a msg</span>
+<span id="L94"><span class="lineNum">      94</span>              :     void processPublish(PublishMsg *m);</span>
+<span id="L95"><span class="lineNum">      95</span>              :     // Disconnect process</span>
+<span id="L96"><span class="lineNum">      96</span>              :     void processDisconnect();</span>
+<span id="L97"><span class="lineNum">      97</span>              : };</span>
+<span id="L98"><span class="lineNum">      98</span>              : </span>
+<span id="L99"><span class="lineNum">      99</span>              : /// @brief Structure to represent the concept of</span>
+<span id="L100"><span class="lineNum">     100</span>              : ///        subscriptions made by the clients.</span>
+<span id="L101"><span class="lineNum">     101</span>              : ///  \param topic Name of the topic</span>
+<span id="L102"><span class="lineNum">     102</span>              : ///  \param owner *Client who subscribe the topic</span>
+<span id="L103"><span class="lineNum">     103</span> <span class="tlaUNC">           0 : struct Subscription</span></span>
+<span id="L104"><span class="lineNum">     104</span>              : {</span>
+<span id="L105"><span class="lineNum">     105</span>              :     TopicName topic;</span>
+<span id="L106"><span class="lineNum">     106</span>              :     Client *owner;</span>
+<span id="L107"><span class="lineNum">     107</span>              : };</span>
+<span id="L108"><span class="lineNum">     108</span>              : </span>
+<span id="L109"><span class="lineNum">     109</span>              : /// @brief Structure for retained topics</span>
+<span id="L110"><span class="lineNum">     110</span>              : /// \param topic Topic name</span>
+<span id="L111"><span class="lineNum">     111</span>              : /// \param value Topic value</span>
+<span id="L112"><span class="lineNum">     112</span>              : /// \param owner *Client who publish the topic</span>
+<span id="L113"><span class="lineNum">     113</span> <span class="tlaUNC">           0 : struct RetainedTopic</span></span>
+<span id="L114"><span class="lineNum">     114</span>              : {</span>
+<span id="L115"><span class="lineNum">     115</span>              :     TopicName topic;</span>
+<span id="L116"><span class="lineNum">     116</span>              :     TopicValue value;</span>
+<span id="L117"><span class="lineNum">     117</span>              :     Client *owner;</span>
+<span id="L118"><span class="lineNum">     118</span>              : };</span>
+<span id="L119"><span class="lineNum">     119</span>              : </span>
+<span id="L120"><span class="lineNum">     120</span>              : /// \brief Compare topics functor</span>
+<span id="L121"><span class="lineNum">     121</span>              : struct CompareTopic</span>
+<span id="L122"><span class="lineNum">     122</span>              : {</span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :     bool operator()(Subscription *lhs, Subscription *rhs) const</span></span>
+<span id="L124"><span class="lineNum">     124</span>              :     {</span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaUNC">           0 :         return (lhs-&gt;topic &lt; rhs-&gt;topic);</span></span>
+<span id="L126"><span class="lineNum">     126</span>              :     };</span>
+<span id="L127"><span class="lineNum">     127</span>              : };</span>
+<span id="L128"><span class="lineNum">     128</span>              : </span>
+<span id="L129"><span class="lineNum">     129</span>              : /// \brief Compare retained topics functor</span>
+<span id="L130"><span class="lineNum">     130</span>              : struct CompareRT</span>
+<span id="L131"><span class="lineNum">     131</span>              : {</span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaUNC">           0 :     bool operator()(RetainedTopic *lhs, RetainedTopic *rhs) const</span></span>
+<span id="L133"><span class="lineNum">     133</span>              :     {</span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaUNC">           0 :         return (lhs-&gt;topic &lt; rhs-&gt;topic);</span></span>
+<span id="L135"><span class="lineNum">     135</span>              :     };</span>
+<span id="L136"><span class="lineNum">     136</span>              : };</span>
+<span id="L137"><span class="lineNum">     137</span>              : </span>
+<span id="L138"><span class="lineNum">     138</span>              : /// @brief Broker representation who register SimClients through the interface BrokerOpsIF</span>
+<span id="L139"><span class="lineNum">     139</span>              : ///. Singleton class.</span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC tlaBgGNC">           2 : class Broker</span></span>
+<span id="L141"><span class="lineNum">     141</span>              : {</span>
+<span id="L142"><span class="lineNum">     142</span>              : public:</span>
+<span id="L143"><span class="lineNum">     143</span>              : </span>
+<span id="L144"><span class="lineNum">     144</span>              :     /// @brief Get the instance object of the broker who is a singleton.</span>
+<span id="L145"><span class="lineNum">     145</span>              :     /// @return Broker *Broker instance</span>
+<span id="L146"><span class="lineNum">     146</span>              :     static Broker *getInstance();</span>
+<span id="L147"><span class="lineNum">     147</span>              :     void deleteInstance();</span>
+<span id="L148"><span class="lineNum">     148</span>              : </span>
+<span id="L149"><span class="lineNum">     149</span>              :     /// @brief Create a new client representation in</span>
+<span id="L150"><span class="lineNum">     150</span>              :     /// the broker side trough the interface ClientOpsIF implemented</span>
+<span id="L151"><span class="lineNum">     151</span>              :     /// for the SimClient</span>
+<span id="L152"><span class="lineNum">     152</span>              :     BrokerOpsIF *registerClient(ClientOpsIF *);</span>
+<span id="L153"><span class="lineNum">     153</span>              :     </span>
+<span id="L154"><span class="lineNum">     154</span>              :     /// @brief Register a new subscription in the Broker</span>
+<span id="L155"><span class="lineNum">     155</span>              :     /// @param s Subscription msg</span>
+<span id="L156"><span class="lineNum">     156</span>              :     void registerNewSubs(Subscription *s);</span>
+<span id="L157"><span class="lineNum">     157</span>              : </span>
+<span id="L158"><span class="lineNum">     158</span>              :     /// @brief Look for a topic subscription and send the publish msg to the client</span>
+<span id="L159"><span class="lineNum">     159</span>              :     /// @param m *Publish msg</span>
+<span id="L160"><span class="lineNum">     160</span>              :     /// @param cl *Client who send the msg</span>
+<span id="L161"><span class="lineNum">     161</span>              :     void forEachSubs(PublishMsg *m, Client *cl);</span>
+<span id="L162"><span class="lineNum">     162</span>              : </span>
+<span id="L163"><span class="lineNum">     163</span>              :     /// @brief Get User name</span>
+<span id="L164"><span class="lineNum">     164</span>              :     /// @return string</span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaUNC tlaBgUNC">           0 :     string getUser() { return this-&gt;username; };</span></span>
+<span id="L166"><span class="lineNum">     166</span>              : </span>
+<span id="L167"><span class="lineNum">     167</span>              :     /// @brief Get password</span>
+<span id="L168"><span class="lineNum">     168</span>              :     /// @return string</span>
+<span id="L169"><span class="lineNum">     169</span> <span class="tlaUNC">           0 :     string getPass() { return this-&gt;password; };</span></span>
+<span id="L170"><span class="lineNum">     170</span>              : </span>
+<span id="L171"><span class="lineNum">     171</span>              :     /// @brief Delete subscription</span>
+<span id="L172"><span class="lineNum">     172</span>              :     /// @param s *Subscription</span>
+<span id="L173"><span class="lineNum">     173</span>              :     void delSub(Subscription *s);</span>
+<span id="L174"><span class="lineNum">     174</span>              :     /// @brief Delete retained topic</span>
+<span id="L175"><span class="lineNum">     175</span>              :     /// @param rt *Retained topic</span>
+<span id="L176"><span class="lineNum">     176</span>              :     void deleteRT(RetainedTopic *rt);</span>
+<span id="L177"><span class="lineNum">     177</span>              : </span>
+<span id="L178"><span class="lineNum">     178</span>              :     /// @brief  Delete client</span>
+<span id="L179"><span class="lineNum">     179</span>              :     /// @param cl *Client</span>
+<span id="L180"><span class="lineNum">     180</span>              :     void deleteCl(Client *cl);</span>
+<span id="L181"><span class="lineNum">     181</span>              : </span>
+<span id="L182"><span class="lineNum">     182</span>              : private:</span>
+<span id="L183"><span class="lineNum">     183</span>              :     std::list&lt;Client *&gt; clients; // List of pointer of clients</span>
+<span id="L184"><span class="lineNum">     184</span>              :     std::mutex clmtx;</span>
+<span id="L185"><span class="lineNum">     185</span>              : </span>
+<span id="L186"><span class="lineNum">     186</span>              :     // cache for optimization of search of subscriptions with functor of comparation</span>
+<span id="L187"><span class="lineNum">     187</span>              :     std::multiset&lt;Subscription *, CompareTopic&gt; subs_cache;</span>
+<span id="L188"><span class="lineNum">     188</span>              :     std::mutex sbsmtx;</span>
+<span id="L189"><span class="lineNum">     189</span>              : </span>
+<span id="L190"><span class="lineNum">     190</span>              :     // Cache for retained topics with functores of comparation</span>
+<span id="L191"><span class="lineNum">     191</span>              :     std::set&lt;RetainedTopic *, CompareRT&gt; rt_cache;</span>
+<span id="L192"><span class="lineNum">     192</span>              :     std::mutex rtmtx;</span>
+<span id="L193"><span class="lineNum">     193</span>              : </span>
+<span id="L194"><span class="lineNum">     194</span>              :     /// Singleton</span>
+<span id="L195"><span class="lineNum">     195</span> <span class="tlaGNC tlaBgGNC">           3 :     Broker() { ; };                             /// Constructor</span></span>
+<span id="L196"><span class="lineNum">     196</span>              :     Broker(Broker const &amp;) = delete;            /// copy constructor private</span>
+<span id="L197"><span class="lineNum">     197</span>              :     Broker &amp;operator=(Broker const &amp;) = delete; /// assignment operator private</span>
+<span id="L198"><span class="lineNum">     198</span>              :     static Broker *m_pInstance;</span>
+<span id="L199"><span class="lineNum">     199</span>              : </span>
+<span id="L200"><span class="lineNum">     200</span>              :     /// @brief Look for a retained topic for the new subscription</span>
+<span id="L201"><span class="lineNum">     201</span>              :     /// and send the retained topic to the client</span>
+<span id="L202"><span class="lineNum">     202</span>              :     /// @param sb *Subscription</span>
+<span id="L203"><span class="lineNum">     203</span>              :     void ifRT(Subscription *sb);</span>
+<span id="L204"><span class="lineNum">     204</span>              : </span>
+<span id="L205"><span class="lineNum">     205</span> <span class="tlaGNC">           1 :     string username = &quot;root&quot;; // User name</span></span>
+<span id="L206"><span class="lineNum">     206</span> <span class="tlaGNC">           1 :     string password = &quot;1234&quot;; // Password</span></span>
+<span id="L207"><span class="lineNum">     207</span>              : };</span>
+<span id="L208"><span class="lineNum">     208</span>              : </span>
+<span id="L209"><span class="lineNum">     209</span>              : #endif // BROKER_H</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+genhtml -o out /tmp/coverage.info --ignore-errors source --ignore-errors inconsistent
